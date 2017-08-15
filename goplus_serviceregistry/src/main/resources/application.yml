@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: goplus-serviceregitry
+
+server:
+  port: 8761
+#（需要spring-boot-starter-security依赖）
+#security:
+#  basic:
+#    enabled: true     #开启基于HTTP Basic的认证
+#  user:
+#    name: goplus
+#    password: eureka
+
+eureka:
+  instance:
+    hostname: localhost
+    metadataMap:
+      #instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+      instance-id:  ${spring.application.name}:${spring.cloud.client.ipAddress}:${server.port} # 将Instance ID设置成IP:端口的形式
+    preferIpAddress: true
+
+    #续约更新时间间隔，client 向Server 发送心跳的时间间隔，服务注册慢的问题，默认是30s.在生产环境中，建议使用默认值
+    lease-renewal-interval-in-seconds: 30
+    #续约到期时间，默认90s
+    lease-expiration-duration-in-seconds: 90
+    #environment: prod
+  client:
+    #是否注册自己
+    registerWithEureka: true
+    #是否从服务器获取服务注册信息
+    fetchRegistry: true
+    #开启健康检查（需要spring-boot-starter-actuator依赖）
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      #http://user:password@${eureka.instance.hostname}:${server.port}/eureka/,如何解决这里注册时密码明文
+      defaultZone: ${EUREKA_SERVER_LIST:http://localhost:8761/eureka/}
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+    #禁用自我保护模式：用于解决已停止的服务节点注销慢或不注销。默认清理无效节点的周期为90s
+    enable-self-preservation: false
+    #清理间隔（单位毫秒）
+    eviction-interval-timer-in-ms: 60000
+
+
+
